@@ -7,6 +7,15 @@ The Standard Celeration Chart chart likenesses reproduced in the current D3.js f
 
 Neither Patrick Marcotte nor Chicago Community Data Project should be credited with creation of such measurement standards or the organization of such standards into a graphical display. Replication of such measurement and visualization properties is done solely for the advancement of standardized time series analysis and at no point does Patrick Marcotte or Chicago Community Data Project intend to commercialize, trademark, or obtain copyrights to Standard Celeration Charts. 
 
+This chart setup uses D3 to render interactive SVG charts. The current index.html file can run the chart without any additional files being loaded. If you'd like to further this project, we have some ideas...  
+
+  - Create a UI for loading data
+  - Begin developing formulas to calculate celeration, bounce, verge 
+  - Create a daily and a weekly chart
+  - Test chart connections to business intelligence software and tools 
+
+Email pbmarcotte@gmail.com for additional copyright and license information. 
+
 
 
 
