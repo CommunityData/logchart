@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-    <title>Log Chart</title>
+    	<title>Log Chart</title>
 	<script src="http://d3js.org/d3.v3.min.js"></script>
 	<style type="text/css">
 		
@@ -13,7 +13,6 @@
 			margin-bottom: 30px;
 	  		font-family: sans-serif;
 		}
-		
 		#chart {
 		  	max-width: 75%;
 			margin-left: 12%;
@@ -24,13 +23,11 @@
 			display: block;
 			font-family: sans-serif;
 		}
-		
 		path { 
 		    	stroke: grey;
 		    	stroke-width: 1;
 		    	fill: none;
 		}
-
 		.axis path,
 		.axis line {
 		    	fill: none;
@@ -45,39 +42,32 @@
 			height: 40px;					
 			padding: 2px;				
 			font: 12px sans-serif;
-			
-		color: white;		
+			color: white;		
 		    	background: #0099FF;	
 		    	border: 0px;		
 		    	border-radius: 8px;			
 		    	pointer-events: none;			
 		}
-		
 		.axis text {
   		  	font: 14px "helvetica neue";
 		  	color: steelblue;
 		}
-		
 		.axis tspan {
   		  	font-size: 9px;
 			color: steelblue;
 		}
-		
 		.grid .tick {
 		    	stroke: steelblue;
 		    	stroke-opacity: 0.2;
 		    	shape-rendering: crispEdges;
 		}
-		
 		.grid .minor line {
 			stroke: steelblue;
 			stroke-opacity: 0.2;	
 		}
-		
 		.grid path {
 			stroke-width: 0;
 		}
-		
 		h1 {
 			font-size: 24px;
 			color: steelblue;
