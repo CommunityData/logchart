@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>	
+	<title>Multiple with CSV</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+	<style type="text/css">
+	
+		div {
+			margin-top: 30px;
+			margin-left: 15px;
+			margin-right: 15px;
+			margin-bottom: 30px;
+  			font-family: sans-serif;
+		}
+	
+		#chart {
+	  		max-width: 75%;
+			margin-left: 12%;
+			margin-right: 10%;
+		}
+		svg {
+	  		border: 1px solid lightgray;
+			display: block;
+			font-family: sans-serif;
+		}
+	
+		path { 
+	    	stroke: grey;
+	    	stroke-width: 1;
+	    	fill: none;
+		}
+
+		.axis path,
+		.axis line {
+	    	fill: none;
+	    	stroke: steelblue;
+	    	stroke-width: 1;
+	    	shape-rendering: crispEdges;
+		}
+		div.tooltip {	
+	    	position: absolute;			
+	    	text-align: center;			
+	    	width: 60px;					
+	    	height: 40px;					
+	    	padding: 2px;				
+	    	font: 12px sans-serif;
+			color: white;		
+	    	background: #0099FF;	
+	    	border: 0px;		
+	    	border-radius: 8px;			
+	    	pointer-events: none;			
+		}
+	
+  		.axis text {
+	  		font: 14px "helvetica neue";
+			color: steelblue;
+		}
+	
+		.axis tspan {
+	  		font-size: 9px;
+			color: steelblue;
+		}
+	
+		.grid .tick {
+	    	stroke: steelblue;
+	    	stroke-opacity: 0.2;
+	    	shape-rendering: crispEdges;
+		}
+	
+		.grid .minor line {
+			stroke: steelblue;
+			stroke-opacity: 0.2;	
+		}
+	
+		.grid path {
+	        stroke-width: 0;
+		}
+	
+		h1 {
+			font-size: 24px;
+			color: steelblue;
+			text-align: center;
+			font-family: sans-serif;
+		}
+		p {
+			font-size: 16px;
+			color: black;
+			text-align: center;
+		}
+		ul {
+			font-size: 16px;
+			margin-left: 0px;
+			margin-right: 50px;
+			text-align: center;
+		}
+		ul li  {
+	 		list-style-position:inside;
+		}
+	</style>
+</head>
+<body> 
+	<div id="chart">
+		<div>		
+			<h1>Standard Chart with CSV Data</h1> 
+		</div>			
+		<script>
+			// define the chart container 
+			var margin = {top: 50, right: 65, bottom: 50, left: 50},
+				width = (735) - margin.left - margin.right,
+				height = (530) - margin.top - margin.bottom;
+
+			// Parse the date / time
+			var parseDate = d3.time.format("%b %Y").parse;
+			var formatTime = d3.time.format("%b 20%y"); 
+
+			// define the x axis values 
+			var x = d3.time.scale()
+				.domain([new Date(2009, 12, 1), new Date(2009, 12, 1)])
+				.range([0, width]);
+
+			// define the y axis values  
+			var y = d3.scale.log()
+				.domain([0, 1])
+				.range([height, 0]);
+
+			// put the x axis on the bottom and set ticks 
+			var xAxis = d3.svg.axis()
+				.scale(x)
+				.orient("bottom")
+				.ticks(10);
+
+			// put the y axis on the left and set ticks  
+			var yAxis = d3.svg.axis()
+				.scale(y)
+				.orient("left")
+				.ticks(0, ",10");
+
+			// Define the line
+			var valueline = d3.svg.line()
+    			.x(function(d) { return x(d.date); })
+    			.y(function(d) { return y(d.price); });
+    
+			// Define div for tooltips
+			var div = d3.select("body")
+				.append("div")  // declare the tooltip div 
+				.attr("class", "tooltip")  // apply the 'tooltip' class
+				.style("opacity", 0);     // set the opacity to nil
+
+			// add the SVG canvas 
+			var svg = d3.select("#chart").append("svg") 
+ 				.attr("viewBox", "0 0 735 530")
+ 				.attr("preserveAspectRatio", "xMinYMin meet")
+    			.append("g")
+    			.attr("transform", "translate(" + margin.left + "," + margin.top + 				")");	
+
+			// Get the data
+			d3.csv("data/data.csv", function(error, data) {
+    			data.forEach(function(d) {
+					d.date = parseDate(d.date);
+					d.price = +d.price;
+    			});
+
+    			// Scale the range of the data
+    			x.domain([new Date(2009, 12, 1), new Date(2019, 12, 1)]);
+    			y.domain([.5, 1000000]); 
+
+    			// Nest the entries by variable
+    			var dataNest = d3.nest()
+        			.key(function(d) {return d.symbol;})
+        			.entries(data);
+
+    		// Loop through each value 
+				// Plot multiple datasets on one chart	
+    		dataNest.forEach(function(d) {
+					svg.append("path")
+            		.attr("class", "line")
+					.attr("transform", "translate(25)")
+            		.attr("d", valueline(d.values)); 
+
+    		});
+	
+			// Add the data symbols 
+			svg.selectAll("dot")	
+    			.data(data)		
+				.enter().append("circle")								
+    			.attr("r", 2.5)		
+    			.attr("cx", function(d) { return x(d.date); })		 
+    			.attr("cy", function(d) { return y(d.price); })		
+    			.on("mouseover", function(d) {		
+        			div.transition()		
+            			.duration(200)		
+            			.style("opacity", .9);		
+        			div.html(formatTime(d.date) + "</br>"  + d.price)	
+            			.style("left", (d3.event.pageX) + "px")		
+            			.style("top", (d3.event.pageY - 28) + "px");	
+        		})
+				.attr("transform", "translate(25)")						
+    			.on("mouseout", function(d) {		
+        			div.transition()		
+            			.duration(500)		
+            			.style("opacity", 0);	
+    			});	
+
+			// function for the x grid lines 
+			function make_x_axis() {
+				return d3.svg.axis()
+					.scale(x)
+					.orient("bottom")
+					.ticks(20)
+			}
+
+			// function for the y grid lines
+			function make_y_axis() {
+				return d3.svg.axis()
+					.scale(y)
+					.orient("left")
+					.ticks(1)
+			}
+	
+			// draw the x grid lines 
+			svg.append("g")
+    			.attr("class", "grid")
+    			.attr("transform", "translate(25," + height + ")")
+    			.call(make_x_axis()
+        		.tickSize(-height, 0, 0)
+        		.tickFormat("")
+    		)
+
+			// draw the y grid lines
+			svg.append("g")            
+    		 .attr("class", "grid")
+				 .attr("transform", "translate(25)")
+    		 .call(make_y_axis()
+         .tickSize(-width, 0, 0)
+         .tickFormat("")
+    	)
+				
+			// Add the X Axis
+    	svg.append("g")
+        	.attr("class", "x axis")
+        	.attr("transform", "translate(25," + height + ")")
+        	.call(xAxis);
+
+    	// Add the Y Axis
+    	svg.append("g")
+          .attr("class", "y axis")
+				  .attr("transform", "translate(25)")
+        	.call(yAxis);
+    
+			// add the chart title 
+			svg.append("text")
+        	.attr("x", (width / 2))             
+        	.attr("y", 0 - (margin.top / 2))
+        	.attr("text-anchor", "middle")  
+        	.style("font-size", "16px") 
+        	.style("text-decoration", "bold")  
+        	.text("Crimes Reported per Month: Rogers Park");
+	
+			// add the x axis label 
+			svg.append("text")
+        	.attr("transform", "translate(" + (width / 2) + " ," + (height 					+ margin.bottom) + ")")
+			    .attr("y", -8)
+        	.style("text-anchor", "middle")
+        	.text("Successive Calendar Months");
+		
+    	// add the y axis label 
+			svg.append("text")
+        	.attr("transform", "rotate(-90)")
+        	.attr("y", 5 - margin.left)
+        	.attr("x", 0 - (height / 2))
+      		.attr("dy", "1em")
+      		.style("text-anchor", "middle")
+      		.text("Count per Month");		
+			}); 
+		</script>
+	</div>
+</body>
+</html>
